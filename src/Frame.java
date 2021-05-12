@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-//something
+//something 2
 public class Frame extends JFrame {
 	public static String title = "TowerBacon Alpha -\"Swedish O is the most beautiful one!\"";
 	public static Dimension size = new Dimension(700,550);
