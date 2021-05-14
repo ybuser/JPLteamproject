@@ -8,6 +8,7 @@ public class Screen extends JPanel implements Runnable {
 
 	public static Image[] tileset_ground = new Image[100];
 	public static Image[] tileset_air = new Image[100];
+	public static Image[] tileset_res = new Image[100];
 	
 	public static int myWidth, myHeight;
 	
@@ -19,8 +20,11 @@ public class Screen extends JPanel implements Runnable {
 	public static Save save;
 	public static Store store;
 	
-	public Screen() {
+	public Screen(Frame frame) {
 		//setBackground(Color.PINK);
+		frame.addMouseListener(new KeyHandel());
+		frame.addMouseMotionListener(new KeyHandel());
+		
 		thread.start();
 	}
 	
@@ -38,6 +42,8 @@ public class Screen extends JPanel implements Runnable {
 			tileset_air[i] = createImage(new FilteredImageSource(tileset_air[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		
+		tileset_res[0] = new ImageIcon("res/cell.png").getImage();
+		
 		save.loadSave(new File("save/mission1.ulixava"));
 	}
 	
@@ -51,7 +57,12 @@ public class Screen extends JPanel implements Runnable {
 			isFirst = false;
 		}
 		
-		g.clearRect(0, 0, getWidth(), getHeight());
+		g.setColor(new Color(70, 70, 70));
+		g.fillRect(0, 0, getWidth(), getHeight());
+		g.setColor(new Color(0, 0, 0));
+		g.drawLine(room.block[0][0].x-1, 0, room.block[0][0].x-1, room.block[room.worldHeight-1][0].y + room.blockSize); //Drawing the left line
+		g.drawLine(room.block[0][room.worldWidth-1].x + room.blockSize, 0, room.block[0][room.worldWidth-1].x + room.blockSize , room.block[room.worldHeight-1][0].y + room.blockSize); //Drawing the right line
+		g.drawLine(room.block[0][0].x, room.block[room.worldHeight-1][0].y +room.blockSize, room.block[0][room.worldWidth-1].x + room.blockSize, room.block[room.worldHeight-1][0].y +room.blockSize); //Drawing the bottom Line
 		
 		room.draw(g); // Drawing the room
 		store.draw(g); // Drawing th store.
