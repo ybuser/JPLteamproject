@@ -8,8 +8,11 @@ public class Screen extends JPanel implements Runnable{
 	
 	public static Image[] tileset_ground = new Image[100];
 	public static Image[] tileset_air = new Image[100];
+	public static Image[] tileset_res = new Image[100];
+	public static Image[] tileset_mob = new Image[100];
 	
 	public static int myWidth, myHeight;
+	public static int coinage = 10, health = 100;
 	
 	public static boolean isFirst = true;
 	
@@ -19,7 +22,12 @@ public class Screen extends JPanel implements Runnable{
 	public static Save save;
 	public static Store store;
 	
-	public Screen() {
+	public static Mob[] mobs = new Mob[100];
+	
+	public Screen(Frame frame) {
+		frame.addMouseListener(new KeyHandle());
+		frame.addMouseMotionListener(new KeyHandle());
+		
 		thread.start();
 	}
 	
@@ -37,8 +45,20 @@ public class Screen extends JPanel implements Runnable{
 			tileset_air[i] = createImage(new FilteredImageSource(tileset_air[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		
+		tileset_res[0] = new ImageIcon("res/cell.png").getImage();
+		tileset_res[1] = new ImageIcon("res/heart.png").getImage();
+		tileset_res[2] = new ImageIcon("res/coin.png").getImage();
+		
+		tileset_mob[0] = new ImageIcon("res/mob.png").getImage();
+		
 		save.loadSave(new File("save/mission1.ulixava"));
+		
+		for(int i=0;i<mobs.length;i++) {
+			mobs[i] = new Mob();
+		}
+		
 	}
+	
 	
 	public void paintComponent(Graphics g) {
 		if(isFirst) {
@@ -49,20 +69,50 @@ public class Screen extends JPanel implements Runnable{
 			isFirst = false;
 		}
 		
-		g.setColor(new Color(50,50,50));
+		g.setColor(new Color(70,70,70));
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(new Color(0,0,0));
 		g.drawLine(room.block[0][0].x-1, 0, room.block[0][0].x-1, room.block[room.worldHeight-1][0].y+room.blockSize); //Drawing the left line
 		g.drawLine(room.block[0][room.worldWidth-1].x, 0, room.block[0][room.worldWidth-1].x, room.block[room.worldHeight-1][0].y+room.blockSize); //Drawing the right line
-
+		g.drawLine(room.block[0][0].x, room.block[room.worldHeight-1][0].y + room.blockSize, room.block[0][room.worldWidth-1].x + room.blockSize, room.block[room.worldHeight-1][0].y + room.blockSize); //Drawing the bottom line
+		
 		room.draw(g); //Drawing the room
+		
+		for(int i=0; i<mobs.length; i++) {
+			if(mobs[i].inGame) {
+				mobs[i].draw(g);
+			}
+		}
+		
 		store.draw(g); //Drawing the store
+	}
+	
+	public int spawnTime = 2400, spawnFrame = 0;
+	public void mobSpawner() {
+		if(spawnFrame >= spawnTime) {
+			for(int i=0; i<mobs.length; i++) {
+				if(!mobs[i].inGame) {
+					mobs[i].spawnMob(Value.mobGreeny);
+					break;
+				}
+			}
+			
+			spawnFrame = 0;
+		} else {
+			spawnFrame += 1;
+		}
 	}
 	
 	public void run() {
 		while(true) {
 			if(!isFirst) {
 				room.physic(); //For all the physics in the game
+				mobSpawner();
+				for(int i=0; i<mobs.length; i++) {
+					if(mobs[i].inGame) {
+						mobs[i].physic();
+					}
+				}
 			}
 			
 			repaint();
