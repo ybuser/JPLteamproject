@@ -8,6 +8,8 @@ public class Store {
 	public static int iconSize = 20;
 	public static int iconSpace = 6;
 	public static int iconTextY = 15;
+	public static int itemIn = 4;
+	public static int[] buttonID = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	
 	public Rectangle[] button = new Rectangle[shopWidth];
@@ -16,6 +18,10 @@ public class Store {
 	
 	public Store() {
 		define();
+	}
+	
+	public void click(int mouseButton) {
+		
 	}
 	
 	public void define() {
@@ -36,6 +42,7 @@ public class Store {
 			}
 			
 			g.drawImage(Screen.tileset_res[0], button[i].x, button[i].y, button[i].width, button[i].height, null);
+			g.drawImage(Screen.tileset_air[buttonID[i]], button[i].x + itemIn, button[i].y + itemIn, button[i].width - (itemIn*2), button[i].height - (itemIn*2), null);
 		}
 		
 		g.drawImage(Screen.tileset_res[1], buttonHealth.x, buttonHealth.y, buttonHealth.width, buttonHealth.height, null);
