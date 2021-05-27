@@ -21,7 +21,9 @@ public class Store {
 	}
 	
 	public void click(int mouseButton) {
-		
+		if(mouseButton == 0) {
+			System.out.println("hey");
+		}
 	}
 	
 	public void define() {
