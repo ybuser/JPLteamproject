@@ -14,7 +14,7 @@ public class Frame extends JFrame {
 		
 		init();
 	}
-	
+	 
 	public void init() {
 		setLayout(new GridLayout(1,1,0,0));
 		
