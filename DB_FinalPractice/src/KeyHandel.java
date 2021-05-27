@@ -11,7 +11,7 @@ public class KeyHandel implements MouseMotionListener, MouseListener {
 
 	
 	public void mousePressed(MouseEvent e) {
-		
+		Screen.store.click(e.getButton());
 		
 	}
 

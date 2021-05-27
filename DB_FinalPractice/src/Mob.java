@@ -12,7 +12,9 @@ public class Mob extends Rectangle {
 	public boolean hasDownward = false;
 	public boolean hasLeft = false;
 	public boolean hasRight = false;
-	
+	public int health;
+	public int healthSpace = 3;
+	public int healthHeight = 6;
 	
 	public Mob() {
 		
@@ -28,7 +30,7 @@ public class Mob extends Rectangle {
 		}
 		
 		this.mobID = mobID;
-		
+		this.health = mobSize;
 		inGame = true;
 	
 	}
@@ -38,8 +40,11 @@ public class Mob extends Rectangle {
 		direction = right;
 		mobWalk = 0;
 		
-		//Screen.room.block[0][0].getMoney(mobID);
-		
+		Screen.room.block[0][0].getMoney(mobID);	
+	}
+	
+	public void looseHealth() {
+		Screen.health -=1;
 	}
 	
 	public int walkFrame =0, walkSpeed=40;
@@ -102,6 +107,12 @@ public class Mob extends Rectangle {
 						}
 					}catch(Exception e) {}
 				}
+				
+				if(Screen.room.block[yC][xC].airID == Value.airCave) {
+					deleteMob();
+					looseHealth();
+				}
+				
 					hasUpward = false;
 					hasDownward = false;
 					hasLeft = false;
@@ -117,9 +128,33 @@ public class Mob extends Rectangle {
 		
 	}
 	
+	public void loseHealth(int amo) {
+		health -= amo;
+			
+		checkDeath();
+	}
+	
+	public void checkDeath() {
+		if(health == 0) {
+			deleteMob();
+		}
+	}
+	
+	public boolean isDead() {
+		return !inGame;
+	}
+	
 	public void draw(Graphics g) {
 		//if(inGame) {
 			g.drawImage(Screen.tileset_mob[mobID], x, y, width, height, null);
 		//}
+			g.setColor(new Color(180, 50, 50));
+			g.fillRect(x, y - (healthSpace + healthHeight), width, healthHeight);
+			
+			g.setColor(new Color(50, 180, 50));
+			g.fillRect(x, y - (healthSpace + healthHeight), health, healthHeight);
+			
+			g.setColor(new Color(0, 0, 0));
+			g.drawRect(x, y - (healthSpace + healthHeight), health - 1, healthHeight - 1);
 	}
 }
