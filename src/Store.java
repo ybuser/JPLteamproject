@@ -9,20 +9,34 @@ public class Store {
 	public static int iconSpace = 6;
 	public static int iconTextY = 15;
 	public static int itemIn = 4;
-	public static int[] buttonID = {0, 0, 0, 0, 0, 0, 0, 0};
-
+	public static int heldID = -1;
+	public static int[] buttonID = {Value.airTowerLaser, Value.airAir, Value.airAir, Value.airAir, Value.airAir, Value.airAir, Value.airAir, Value.airTrashCan};
+	public static int[] buttonPrice = {10, 0, 0, 0, 0, 0, 0, 0};
 	
 	public Rectangle[] button = new Rectangle[shopWidth];
 	public Rectangle buttonHealth;
 	public Rectangle buttonCoins;
+	
+	public boolean holdsItem = false;
 	
 	public Store() {
 		define();
 	}
 	
 	public void click(int mouseButton) {
-		if(mouseButton == 0) {
-			System.out.println("hey");
+		if(mouseButton == 1) {
+			for(int i=0; i<button.length; i++) {
+				if(button[i].contains(Screen.mse)) {
+					if(buttonID[i] != Value.airAir) {
+						if(buttonID[i] == Value.airTrashCan) { //Delete item.
+							holdsItem = false;
+						} else {
+							heldID = buttonID[i];
+							holdsItem = true;
+						}
+					}
+				}
+			}
 		}
 	}
 	
@@ -44,7 +58,12 @@ public class Store {
 			}
 			
 			g.drawImage(Screen.tileset_res[0], button[i].x, button[i].y, button[i].width, button[i].height, null);
-			g.drawImage(Screen.tileset_air[buttonID[i]], button[i].x + itemIn, button[i].y + itemIn, button[i].width - (itemIn*2), button[i].height - (itemIn*2), null);
+			if(buttonID[i] != Value.airAir) g.drawImage(Screen.tileset_air[buttonID[i]], button[i].x + itemIn, button[i].y + itemIn, button[i].width - (itemIn*2), button[i].height - (itemIn*2), null);
+			if(buttonPrice[i] > 0) {
+				g.setColor(new Color(255,255,255));
+				g.setFont(new Font("Courier New", Font.BOLD, 14));
+				g.drawString("$" + buttonPrice[i] + "", button[i].x + itemIn, button[i].y + itemIn + 10);
+			}
 		}
 		
 		g.drawImage(Screen.tileset_res[1], buttonHealth.x, buttonHealth.y, buttonHealth.width, buttonHealth.height, null);
@@ -53,6 +72,9 @@ public class Store {
 		g.setColor(new Color(255,255,255));
 		g.drawString("" + Screen.health, buttonHealth.x + buttonHealth.width + iconSpace, buttonHealth.y + iconTextY);
 		g.drawString("" + Screen.coinage, buttonCoins.x + buttonCoins.width + iconSpace, buttonCoins.y + iconTextY);
-
+		
+		if(holdsItem) {
+			g.drawImage(Screen.tileset_air[heldID], Screen.mse.x - ((button[0].width - (itemIn*2))/2) + itemIn, Screen.mse.y - ((button[0].width - (itemIn*2))/2) + itemIn, button[0].width - (itemIn*2), button[0].height - (itemIn*2), null);
+		}
 	}
 }

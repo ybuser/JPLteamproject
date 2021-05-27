@@ -41,7 +41,7 @@ public class Screen extends JPanel implements Runnable{
 			tileset_ground[i] = createImage(new FilteredImageSource(tileset_ground[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		for(int i=0; i<tileset_air.length;i++) {
-			tileset_air[i] = new ImageIcon("res/tileset_air.png").getImage();
+			tileset_air[i] = new ImageIcon("res/characters.png").getImage();
 			tileset_air[i] = createImage(new FilteredImageSource(tileset_air[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		
@@ -85,6 +85,14 @@ public class Screen extends JPanel implements Runnable{
 		}
 		
 		store.draw(g); //Drawing the store
+		
+		if(health<1) {
+			g.setColor(new Color(240,20,20));
+			g.fillRect(0, 0, myWidth, myHeight);
+			g.setColor(new Color(255,255,255));
+			g.setFont(new Font("Courier New", Font.BOLD, 14));
+			g.drawString("Game Over, Unlucky...", 10, 20);
+		}
 	}
 	
 	public int spawnTime = 2400, spawnFrame = 0;
@@ -105,7 +113,7 @@ public class Screen extends JPanel implements Runnable{
 	
 	public void run() {
 		while(true) {
-			if(!isFirst) {
+			if(!isFirst && health > 0) {
 				room.physic(); //For all the physics in the game
 				mobSpawner();
 				for(int i=0; i<mobs.length; i++) {
