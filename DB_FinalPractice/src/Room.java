@@ -12,7 +12,7 @@ public class Room {
 	}
 	
 	public void define() {
-block = new Block[worldHeight][worldWidth];
+		block = new Block[worldHeight][worldWidth];
 		
 		for(int y = 0; y < block.length; y++) {
 			for(int x = 0; x < block[0].length; x++) {
