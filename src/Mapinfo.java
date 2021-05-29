@@ -9,7 +9,7 @@ public class Mapinfo {
 			
 			//길 저장..
 			while(sc.hasNext()) {
-				Game.killsToWin = sc.nextInt();
+				Game.goalNum = sc.nextInt();
 				
 				//groundID 읽기
 				for(int y = 0; y < Game.map.tileHeigntNum; y++) {

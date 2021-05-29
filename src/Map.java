@@ -3,9 +3,9 @@ import java.awt.*;
 
 public class Map {
 	//맵을 블록처럼 활용(좌표 같이)
-	public int tileWidthNum = 12; //블록 가로 개수
-	public int tileHeigntNum = 8; //블록 새로 개수
-	public int tileSize = 52; //블록 가로 세로 길이(정사각형)
+	public int tileWidthNum = 12; //타일 가로 개수
+	public int tileHeigntNum = 8; //타일 새로 개수
+	public int tileSize = 52; //타일 가로 세로 길이(정사각형)
 	
 	public Tile[][] tile;
 	
@@ -16,18 +16,18 @@ public class Map {
 	
 	
 	public void define() {
-		//블록 배열 생성
+		//타일 배열 생성
 		tile = new Tile[tileHeigntNum][tileWidthNum];
 		
 		for(int y=0;y<tileHeigntNum;y++) {
 			for(int x=0;x<tile[0].length;x++) {				
-				//블록 생성, 블록들을 가운데 패널 가운데로 정렬
+				//타일 생성, 타일들을 가운데 패널 가운데로 정렬
 				tile[y][x] = new Tile(28 + x*tileSize, y*tileSize, tileSize, tileSize, IDnum.groundGrass, IDnum.airAir);
 			}
 		}
 	}
 	
-	//Block physic 실행
+	//tile physic 실행
 	public void physic() {
 		for(int y=0;y<tileHeigntNum;y++)	{
 			for(int x=0;x<tileWidthNum;x++) {
@@ -36,7 +36,7 @@ public class Map {
 		}
 	}
 	
-	//블록 이미지 생성
+	//tile 이미지 생성
 	public void draw(Graphics g) {
 		//블록 draw
 		for(int y=0;y<tileHeigntNum;y++) {
@@ -104,7 +104,6 @@ public class Map {
 			//몬스터들이 범위 안에 들어오는지 확인
 			if(!shoting) {
 				shoting = false;
-//					if(airID == Value.airTowerMyeongRyun) {
 					if(airID != IDnum.airAir && (airID == IDnum.airTowerMyeongRyun || airID == IDnum.airTowerYulJeon)) {
 						for(int i=0;i<Game.mobs.length;i++) {
 							if(Game.mobs[i].isLiving) {
@@ -122,6 +121,7 @@ public class Map {
 				if(loseFrame >= loseTime) {
 					Game.mobs[shotMob].loseMobHealth(1);
 					
+					
 					loseFrame = 0;
 				} else {
 					loseFrame += 1;
@@ -132,9 +132,9 @@ public class Map {
 					shoting = false;
 					shotMob = -1;
 					
-					Game.killed += 1;
+					Game.deadMob += 1;
 					
-					Game.hasWon();
+					Game.clear();
 				}
 			}
 		}

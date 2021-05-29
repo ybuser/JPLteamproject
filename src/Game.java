@@ -14,12 +14,12 @@ public class Game extends JPanel implements Runnable{
 	
 	public static int myWidth, myHeight;
 	public static int coinNum = 10, healthNum = 100;
-	public static int killed = 0, killsToWin = 0, level = 1, maxLevel = 3;
-	public static int winTime = 4000, winFrame = 0;
+	public static int deadMob = 0, goalNum = 0;
+	public static int level = 1, maxLevel = 3;
+	public static int clearTime = 2000, clearFrame = 0;
 	
-	public static boolean isFirst = true;
-	public static boolean isDebug = false;
-	public static boolean isWin = false;
+	public static boolean first = true;
+	public static boolean flag_Win = false;
 	
 	public static Point mouse = new Point(0, 0);
 	
@@ -40,11 +40,11 @@ public class Game extends JPanel implements Runnable{
 	}
 	
 	//게임 클리어 조건
-	public static void hasWon() {
-		if(killed == killsToWin) {
-			isWin = true;
-			killed = 0;
-			coinNum = 0;
+	public static void clear() {
+		if(deadMob == goalNum) {
+			deadMob = 0;		
+			flag_Win = true;
+			coinNum = 0;	
 		}
 	}
 	
@@ -91,12 +91,12 @@ public class Game extends JPanel implements Runnable{
 	public void paintComponent(Graphics g) {
 		
 		//시작
-		if(isFirst) {
+		if(first) {
 			myWidth = getWidth();
 			myHeight = getHeight();
 			define();
 			
-			isFirst = false;
+			first = false;
 		}
 		
 		//배경 색 출력
@@ -126,7 +126,7 @@ public class Game extends JPanel implements Runnable{
 		}
 		
 		//이겼을때, 다음단계 또는 게임 종료
-		if(isWin) {
+		if(flag_Win) {
 			g.setColor(new Color (255,255,255));
 			g.fillRect( 0, 0, getWidth(), getHeight());
 			g.setColor(new Color (0, 0, 0));
@@ -160,7 +160,7 @@ public class Game extends JPanel implements Runnable{
 
 	public void run() {
 		while(true) {
-			if(!isFirst && healthNum > 0 && !isWin) {
+			if(!flag_Win && healthNum > 0 && !first) {
 				map.physic();
 				mobSpawner();
 				for(int i = 0; i < mobs.length; i++) {
@@ -169,23 +169,24 @@ public class Game extends JPanel implements Runnable{
 					}
 				}
 			}else {
-				if(isWin) {
-					if(winFrame >= winTime) {
+				if(flag_Win) {
+					if(clearFrame >= clearTime) {
 						if(level == maxLevel) {
 							System.exit(0);
 						} else {
 							//level 증가
 							level += 1;
 							define();
+							Game.coinNum = 10;
 							spawnTime -= 400;
 							for(int i = 0; i < mobs.length; i++) {
 								mobs[i].levelUp();
 							}
-							isWin = false;
+							flag_Win = false;
 						}	
-							winFrame = 0;
+							clearFrame = 0;
 					} else {
-						winFrame += 1;
+						clearFrame += 1;
 					}
 				}
 			}
