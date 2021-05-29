@@ -8,17 +8,21 @@ public class Game extends JPanel implements Runnable{
 	
 	//이미지들
 	public static Image[] groundImageFile = new Image[10];
-	public static Image[] airImageFile = new Image[10];
+	public static Image[] charImageFile = new Image[10];
 	public static Image[] restImageFile = new Image[10];
 	public static Image[] mobImageFile = new Image[10];
+	
+	public static Mob[] monsters = new Mob[100];
+	
+	public static boolean first = true;
 	
 	public static int myWidth, myHeight;
 	public static int coinNum = 10, healthNum = 100;
 	public static int deadMob = 0, goalNum = 0;
-	public static int level = 1, maxLevel = 3;
 	public static int clearTime = 2000, clearFrame = 0;
+	public static int level = 1, maxLevel = 3;
 	
-	public static boolean first = true;
+
 	public static boolean flag_Win = false;
 	
 	public static Point mouse = new Point(0, 0);
@@ -28,8 +32,6 @@ public class Game extends JPanel implements Runnable{
 	public static Mapinfo mapInfo;
 	
 	public static Shop shop;
-	
-	public static Mob[] mobs = new Mob[100];
 	
 	//게임 시작
 	public Game(Frame frame) {
@@ -60,30 +62,30 @@ public class Game extends JPanel implements Runnable{
 		//ground 이미지
 		for(int i = 0; i<groundImageFile.length; i++) {
 			//이미지 객체 생성
-			groundImageFile[i] = new ImageIcon("res/tileset_ground.png").getImage();
+			groundImageFile[i] = new ImageIcon("image/tile.png").getImage();
 			
 			//이미지 잘라내기
 			groundImageFile[i] = createImage(new FilteredImageSource(groundImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		//air 이미지
-		for(int i = 0; i<airImageFile.length; i++) {
-			airImageFile[i] = new ImageIcon("res/airTestFile.png").getImage();
-			airImageFile[i] = createImage(new FilteredImageSource(airImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
+		for(int i = 0; i<charImageFile.length; i++) {
+			charImageFile[i] = new ImageIcon("image/characters.png").getImage();
+			charImageFile[i] = createImage(new FilteredImageSource(charImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		
 		//나머지 이미지들
-		restImageFile[0] = new ImageIcon("res/cell.png").getImage();
-		restImageFile[1] = new ImageIcon("res/heart.png").getImage();
-		restImageFile[2] = new ImageIcon("res/coin.png").getImage();
+		restImageFile[0] = new ImageIcon("image/cell.png").getImage();
+		restImageFile[1] = new ImageIcon("image/heart.png").getImage();
+		restImageFile[2] = new ImageIcon("image/coin.png").getImage();
 		
-		mobImageFile[0] = new ImageIcon("res/mob.png").getImage(); //몹 이미지
+		mobImageFile[0] = new ImageIcon("image/mob_eunhang.png").getImage(); //몹 이미지
 		
 		//맵(길) 만들기
 		mapInfo.loadMap(new File("save/map" + level + ".txt"));
 		
 		//몬스터 생성
-		for(int i = 0; i < mobs.length; i++) {
-			mobs[i] = new Mob();
+		for(int i = 0; i < monsters.length; i++) {
+			monsters[i] = new Mob();
 		}
 	
 	}
@@ -107,9 +109,9 @@ public class Game extends JPanel implements Runnable{
 		map.draw(g); //맵 출력
 		
 		//온스터 생성
-		for(int i = 0; i < mobs.length; i++) {
-			if(mobs[i].isLiving) {
-				mobs[i].draw(g);
+		for(int i = 0; i < monsters.length; i++) {
+			if(monsters[i].isLiving) {
+				monsters[i].draw(g);
 			}
 		}
 		
@@ -144,9 +146,9 @@ public class Game extends JPanel implements Runnable{
 	public int spawnTime = 2400, spawnFrame = 0;
 	public void mobSpawner() {
 		if(spawnFrame >= spawnTime) {
-			for(int i = 0; i < mobs.length; i++) {
-				if(!mobs[i].isLiving) {
-					mobs[i].spawnMob(IDnum.mobYellow);
+			for(int i = 0; i < monsters.length; i++) {
+				if(!monsters[i].isLiving) {
+					monsters[i].spawnMob(IDnum.mobYellow);
 					break;
 				}
 			}
@@ -163,12 +165,13 @@ public class Game extends JPanel implements Runnable{
 			if(!flag_Win && healthNum > 0 && !first) {
 				map.physic();
 				mobSpawner();
-				for(int i = 0; i < mobs.length; i++) {
-					if(mobs[i].isLiving) {
-						mobs[i].physic();
+				for(int i = 0; i < monsters.length; i++) {
+					if(monsters[i].isLiving) {
+						monsters[i].physic();
 					}
 				}
-			}else {
+			}
+			else {
 				if(flag_Win) {
 					if(clearFrame >= clearTime) {
 						if(level == maxLevel) {
@@ -179,13 +182,14 @@ public class Game extends JPanel implements Runnable{
 							define();
 							Game.coinNum = 10;
 							spawnTime -= 400;
-							for(int i = 0; i < mobs.length; i++) {
-								mobs[i].levelUp();
+							for(int i = 0; i < monsters.length; i++) {
+								monsters[i].levelUp();
 							}
 							flag_Win = false;
 						}	
-							clearFrame = 0;
-					} else {
+						clearFrame = 0;
+					} 
+					else {
 						clearFrame += 1;
 					}
 				}

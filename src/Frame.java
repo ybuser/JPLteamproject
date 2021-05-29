@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Frame extends JFrame {
-	public static String title = "TowerBacon Alpha -\"Swedish O is the most beautiful one!\"";
+	public static String title = "SKKU Tower Defense";
 	public static Dimension size = new Dimension(700,550);
 	
 	public Frame() {

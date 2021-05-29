@@ -23,9 +23,7 @@ public class MouseHandel implements MouseMotionListener, MouseListener{
 	public void mouseExited(MouseEvent e) {}
 
 
-	public void mouseDragged(MouseEvent e) {
-//		Screen.mouse = new Point((e.getX()) - ((Frame.size.width - Screen.myWidth)/2), e.getY() - ((Frame.size.height - (Screen.myHeight)) - (Frame.size.width - Screen.myWidth)/2));
-	} 
+	public void mouseDragged(MouseEvent e) {} 
 
 
 	public void mouseMoved(MouseEvent e) {

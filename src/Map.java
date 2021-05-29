@@ -22,7 +22,7 @@ public class Map {
 		for(int y=0;y<tileHeigntNum;y++) {
 			for(int x=0;x<tile[0].length;x++) {				
 				//타일 생성, 타일들을 가운데 패널 가운데로 정렬
-				tile[y][x] = new Tile(28 + x*tileSize, y*tileSize, tileSize, tileSize, IDnum.groundGrass, IDnum.airAir);
+				tile[y][x] = new Tile(28 + x*tileSize, y*tileSize, tileSize, tileSize, IDnum.groundGrass, IDnum.charAir);
 			}
 		}
 	}
@@ -61,21 +61,21 @@ public class Map {
 		
 		//사진 설정
 		public int groundID;
-		public int airID;
+		public int charID;
 		
 		//타워의 몬스터 공격 속도
-		public int loseTime = 100, loseFrame = 0;
+		public int attackTime = 100, attackFrame = 0;
 		
 		//타워 공격 설정
-		public int shotMob = -1;
-		public boolean shoting = false;
+		public boolean attacking = false;
+		public int attackMob = -1;
 		
 		//블록 생성, 공격 범위 설정
 		public Tile(int x, int y, int width, int height, int groundID, int airID) {
 			setBounds(x, y, width, height);
 			towerAttackRange = new Rectangle(x - (towerAttackRangeSize/2), y - (towerAttackRangeSize/2), width + (towerAttackRangeSize), height + (towerAttackRangeSize));
 			this.groundID = groundID;
-			this.airID = airID;
+			this.charID = airID;
 		}
 		
 		//이미지 생성
@@ -84,8 +84,8 @@ public class Map {
 			g.drawImage(Game.groundImageFile[groundID], x, y, width, height, null);
 			
 			//air에 무언가가 존재할 때 이미지 생성
-			if(airID != IDnum.airAir) {
-				g.drawImage(Game.airImageFile[airID], x, y, width, height, null);
+			if(charID != IDnum.charAir) {
+				g.drawImage(Game.charImageFile[charID], x, y, width, height, null);
 			}
 			
 		}
@@ -95,21 +95,20 @@ public class Map {
 		//공격 설정
 		public void physic() {
 			//공격 몬스터 설정
-			if(shotMob != -1 && towerAttackRange.intersects(Game.mobs[shotMob])) {
-				shoting = true;
+			if(attackMob != -1 && towerAttackRange.intersects(Game.monsters[attackMob])) {
+				attacking = true;
 			} else {
-				shoting = false;
+				attacking = false;
 			}
 			
 			//몬스터들이 범위 안에 들어오는지 확인
-			if(!shoting) {
-				shoting = false;
-					if(airID != IDnum.airAir && (airID == IDnum.airTowerMyeongRyun || airID == IDnum.airTowerYulJeon)) {
-						for(int i=0;i<Game.mobs.length;i++) {
-							if(Game.mobs[i].isLiving) {
-								if(towerAttackRange.intersects(Game.mobs[i])) {
-									shoting = true;
-									shotMob = i;
+			if(!attacking) {
+					if(charID != IDnum.charAir && (charID == IDnum.charTowerMyeongRyun || charID == IDnum.charTowerYulJeon)) {
+						for(int i=0;i<Game.monsters.length;i++) {
+							if(Game.monsters[i].isLiving) {
+								if(towerAttackRange.intersects(Game.monsters[i])) {
+									attackMob = i;
+									attacking = true;
 								}
 							}
 						}
@@ -117,22 +116,25 @@ public class Map {
 			}
 			
 			//공격 과정
-			if(shoting) {					
-				if(loseFrame >= loseTime) {
-					Game.mobs[shotMob].loseMobHealth(1);
+			if(attacking) {			
+				//몬스터를 공격
+				if(attackFrame >= attackTime) {
+					if(charID == IDnum.charTowerMyeongRyun)
+						Game.monsters[attackMob].loseMobHealth(1);
+					else
+						Game.monsters[attackMob].loseMobHealth(2);
 					
 					
-					loseFrame = 0;
+					attackFrame = 0;
 				} else {
-					loseFrame += 1;
+					attackFrame += 1;
 				}
 				
 				//몬스터를 제거했을 때
-				if(Game.mobs[shotMob].isDead()) {
-					shoting = false;
-					shotMob = -1;
+				if(Game.monsters[attackMob].isDead()) {
+					attacking = false;
+					attackMob = -1;
 					
-					Game.deadMob += 1;
 					
 					Game.clear();
 				}
@@ -148,9 +150,9 @@ public class Map {
 		//타워가 몬스터 공격
 		public void attack(Graphics g) {
 			//공격 표시(라인 형태로 표현)
-			if(shoting) {  					
-				g.setColor(new Color(255,255,0));
-				g.drawLine(x + (width/2), y + (height/2), Game.mobs[shotMob].x +  (Game.mobs[0].mobSize/2), Game.mobs[shotMob].y +  (Game.mobs[0].mobSize/2));
+			if(attacking) {  					
+				g.setColor(new Color(100,255,100));
+				g.drawLine(x + (width/2), y + (height/2), Game.monsters[attackMob].x +  (Game.monsters[0].monsterSize/2), Game.monsters[attackMob].y +  (Game.monsters[0].monsterSize/2));
 			}	
 		}
 	
