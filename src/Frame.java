@@ -18,7 +18,7 @@ public class Frame extends JFrame {
 	public void init() {
 		setLayout(new GridLayout(1,1,0,0));
 		
-		Screen screen = new Screen();
+		Game screen = new Game(this);
 		add(screen);
 		
 		setVisible(true);
