@@ -1,160 +1,186 @@
 import java.awt.*;
 
-public class Mob extends Rectangle {
-	public int xC, yC;
-	public int mobSize = 52;
-	public int mobWalk=0;
-	public int upward=0,downward=1,right=2, left=3;
-	public int direction = right;
-	public int mobID = Value.mobAir;
-	public boolean inGame = false;
-	public boolean hasUpward = false;
-	public boolean hasDownward = false;
-	public boolean hasLeft = false;
-	public boolean hasRight = false;
+
+public class Mob extends Rectangle{
+	public int index_X, index_Y;
 	public int health;
+	
+	public int mobID = IDnum.mobAir;
+	
 	public int healthSpace = 3;
 	public int healthHeight = 6;
 	
+	public int monsterSize = 52;
+	public int directionFlag = 0;
+	
+	public int upward= 0, downward = 1, right = 2, left = 3;
+	public int direction = right;
+	
+	public boolean isLiving = false;
+	
+	
 	public Mob() {
-		
+		setDirection();
 	}
 	
 	public void spawnMob(int mobID) {
-		for(int y = 0;y<Screen.room.block.length;y++ ) {
-			if(Screen.room.block[y][0].groundID == Value.groundRoad) {
-				setBounds(Screen.room.block[y][0].x, Screen.room.block[y][0].y, mobSize, mobSize);
-				xC = 0;
-				yC = y;
+		for(int y=0; y < Game.map.tileHeigntNum; y++) {
+			if(Game.map.tile[y][0].groundID == IDnum.groundRoad) {
+				setBounds(Game.map.tile[y][0].x, Game.map.tile[y][0].y, monsterSize, monsterSize);
+				index_X = 0; 
+				index_Y = y;
 			}
 		}
 		
 		this.mobID = mobID;
-		this.health = mobSize;
-		inGame = true;
-	
+		this.health = monsterSize;
+		
+		isLiving = true;
+		
 	}
 	
 	public void deleteMob() {
-		inGame = false;
+		isLiving = false;
 		direction = right;
-		mobWalk = 0;
+		directionFlag = 0;
 		
-		Screen.room.block[0][0].getMoney(mobID);	
+		Game.deadMob += 1;
+		
+		Game.map.tile[0][0].getMoney(mobID);
+		
 	}
 	
 	public void looseHealth() {
-		Screen.health -=1;
+		Game.healthNum -=1;
 	}
 	
-	public int walkFrame =0, walkSpeed=40;
+	public void levelUp() {
+		walkSpeed -= 14;
+	}
+	
+	
+	public int[][] tempRoadMap;
+	
+	public void setDirection() {
+		tempRoadMap = new int[Game.map.tileHeigntNum][Game.map.tileWidthNum];
+		for(int y = 0; y < Game.map.tileHeigntNum; y++) {
+			for(int x = 0; x < Game.map.tileWidthNum; x++) {
+				tempRoadMap[y][x] = Game.map.tile[y][x].groundID;
+			}
+		}	
+	}
+	
+	//방향을 따로 저장해서 해보자!!
+	public int walkFrame = 0, walkSpeed = 30;
+	
 	public void physic() {
-		if(walkFrame>=walkSpeed) {
+		if (walkFrame >= walkSpeed) {
 			if(direction == right) {
-				x+=1;
-			}else if(direction == upward) {
-				y -=1;
-			}else if(direction == downward) {
-				y +=1;
+				x += 1;
+			}
+			else if(direction == upward) {
+				y -= 1;
+			}
+			else if(direction == downward) {
+				y += 1;	
 			}
 			else if(direction == left) {
-				x -=1;
-			}
-			
-			mobWalk +=1;
-			if(mobWalk == Screen.room.blockSize) {
+				x -= 1;			
+			}	
+		
+		
+			directionFlag += 1;
+		
+			if(directionFlag >= Game.map.tileSize) {
 				if(direction == right) {
-					xC+=1;
-					hasRight = true;
-				}else if(direction == upward) {
-					yC -=1;
-					hasUpward=true;
-				}else if(direction == downward) {
-					yC +=1;
-					hasDownward=true;
-				}else if(direction == left) {
-					xC -=1;
-					hasLeft=true;
+					tempRoadMap[index_Y][index_X] = 0;
+					index_X += 1;
+				}
+				else if(direction == upward) {
+					tempRoadMap[index_Y][index_X] = 0;
+					index_Y -= 1;
+				}
+				else if(direction == downward) {
+					tempRoadMap[index_Y][index_X] = 0;
+					index_Y += 1;
+				}
+				else if(direction == left) {
+					tempRoadMap[index_Y][index_X] = 0;
+					index_X -= 1;
 				}
 				
-				if(!hasUpward) {
-					try {
-						if(Screen.room.block[yC+1][xC].groundID == Value.groundRoad) {
+				try {
+					while(true){
+						if(tempRoadMap[index_Y+1][index_X] != 0) {
 							direction = downward;
+							break;
 						}
-					}catch(Exception e) {}
-				}
-				if(!hasDownward) {
-					try {
-						if(Screen.room.block[yC-1][xC].groundID == Value.groundRoad) {
-							direction = upward;
-						}
-					}catch(Exception e) {}
-				}
-				
-				if(!hasLeft) {
-					try {
-						if(Screen.room.block[yC][xC+1].groundID == Value.groundRoad) {
-							direction = right;
-						}
-					}catch(Exception e) {}
-				}
-				
-				if(!hasRight) {
-					try {
-						if(Screen.room.block[yC][xC-1].groundID == Value.groundRoad) {
+						else if(tempRoadMap[index_Y][index_X-1] != 0) {
 							direction = left;
+							break;
 						}
-					}catch(Exception e) {}
-				}
-				
-				if(Screen.room.block[yC][xC].airID == Value.airCave) {
-					deleteMob();
-					looseHealth();
-				}
-				
-					hasUpward = false;
-					hasDownward = false;
-					hasLeft = false;
-					hasRight = false;
-					mobWalk = 0;
-		    }
-			
+						else if(tempRoadMap[index_Y-1][index_X] != 0) {
+							direction = upward;
+							break;
+						}
+						else if(tempRoadMap[index_Y][index_X+1] != 0) {
+							direction = right;
+							break;
+						}
 	
-			walkFrame=0;
-		}else {
-			walkFrame+=1;
+					}
+				}catch(Exception e) {}
+
+				
+				
+				if(Game.map.tile[index_Y][index_X].charID == IDnum.charMapLast) {
+					deleteMob();
+					Game.coinNum -= 2;
+					looseHealth();
+					setDirection();
+				}
+				
+				directionFlag = 0;
+			}
+			walkFrame = 0;
 		}
+		else {
+			walkFrame += 1;
+		}
+		
 		
 	}
 	
-	public void loseHealth(int amo) {
-		health -= amo;
+	
+	public void loseMobHealth(int h) {
+		health -= h;
 			
 		checkDeath();
 	}
 	
 	public void checkDeath() {
-		if(health == 0) {
+		if(health <= 0) {
 			deleteMob();
 		}
 	}
 	
 	public boolean isDead() {
-		return !inGame;
+		return !isLiving;
 	}
 	
-	public void draw(Graphics g) {
-		//if(inGame) {
-			g.drawImage(Screen.tileset_mob[mobID], x, y, width, height, null);
-		//}
-			g.setColor(new Color(180, 50, 50));
-			g.fillRect(x, y - (healthSpace + healthHeight), width, healthHeight);
-			
-			g.setColor(new Color(50, 180, 50));
-			g.fillRect(x, y - (healthSpace + healthHeight), health, healthHeight);
-			
-			g.setColor(new Color(0, 0, 0));
-			g.drawRect(x, y - (healthSpace + healthHeight), health - 1, healthHeight - 1);
+	public void draw (Graphics g) {
+		g.drawImage(Game.mobImageFile[mobID], x, y, width, height, null);
+		
+
+		g.setColor(new Color(180, 50, 50));
+		g.fillRect(x, y - (healthSpace + healthHeight), width, healthHeight);
+		
+		g.setColor(new Color(50, 180, 50));
+		g.fillRect(x, y - (healthSpace + healthHeight), health, healthHeight);
+		
+		g.setColor(new Color(0, 0, 0));
+		g.drawRect(x, y - (healthSpace + healthHeight), health - 1, healthHeight - 1);
+		
 	}
+
 }
