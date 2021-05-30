@@ -2,25 +2,22 @@ import java.awt.*;
 
 
 public class Mob extends Rectangle{
-	public int xC, yC;
+	public int index_X, index_Y;
 	public int health;
+	
+	public int mobID = IDnum.mobAir;
 	
 	public int healthSpace = 3;
 	public int healthHeight = 6;
 	
-	public int mobSize = 52;
+	public int monsterSize = 52;
 	public int directionFlag = 0;
 	
 	public int upward= 0, downward = 1, right = 2, left = 3;
 	public int direction = right;
-	public int mobID = IDnum.mobAir;
 	
 	public boolean isLiving = false;
 	
-	public boolean hasUpward = false;
-	public boolean hasDownward = false;
-	public boolean hasRight = false;
-	public boolean hasLeft = false;
 	
 	public Mob() {
 		setDirection();
@@ -29,14 +26,14 @@ public class Mob extends Rectangle{
 	public void spawnMob(int mobID) {
 		for(int y=0; y < Game.map.tileHeigntNum; y++) {
 			if(Game.map.tile[y][0].groundID == IDnum.groundRoad) {
-				setBounds(Game.map.tile[y][0].x, Game.map.tile[y][0].y, mobSize, mobSize);
-				xC = 0; 
-				yC = y;
+				setBounds(Game.map.tile[y][0].x, Game.map.tile[y][0].y, monsterSize, monsterSize);
+				index_X = 0; 
+				index_Y = y;
 			}
 		}
 		
 		this.mobID = mobID;
-		this.health = mobSize;
+		this.health = monsterSize;
 		
 		isLiving = true;
 		
@@ -47,6 +44,8 @@ public class Mob extends Rectangle{
 		direction = right;
 		directionFlag = 0;
 		
+		Game.deadMob += 1;
+		
 		Game.map.tile[0][0].getMoney(mobID);
 		
 	}
@@ -56,7 +55,7 @@ public class Mob extends Rectangle{
 	}
 	
 	public void levelUp() {
-		walkSpeed -= 10;
+		walkSpeed -= 14;
 	}
 	
 	
@@ -75,7 +74,7 @@ public class Mob extends Rectangle{
 	public int walkFrame = 0, walkSpeed = 30;
 	
 	public void physic() {
-		if(walkFrame >= walkSpeed) {
+		if (walkFrame >= walkSpeed) {
 			if(direction == right) {
 				x += 1;
 			}
@@ -94,45 +93,51 @@ public class Mob extends Rectangle{
 		
 			if(directionFlag >= Game.map.tileSize) {
 				if(direction == right) {
-					tempRoadMap[yC][xC] = 0;
-					xC += 1;
+					tempRoadMap[index_Y][index_X] = 0;
+					index_X += 1;
 				}
 				else if(direction == upward) {
-					tempRoadMap[yC][xC] = 0;
-					yC -= 1;
+					tempRoadMap[index_Y][index_X] = 0;
+					index_Y -= 1;
 				}
 				else if(direction == downward) {
-					tempRoadMap[yC][xC] = 0;
-					yC += 1;
+					tempRoadMap[index_Y][index_X] = 0;
+					index_Y += 1;
 				}
 				else if(direction == left) {
-					tempRoadMap[yC][xC] = 0;
-					xC -= 1;
+					tempRoadMap[index_Y][index_X] = 0;
+					index_X -= 1;
 				}
 				
-				try{
-					if(tempRoadMap[yC+1][xC] != 0) {
-						direction = downward;
-					}
-					else if(tempRoadMap[yC][xC-1] != 0) {
-						direction = left;
-					}
-					else if(tempRoadMap[yC-1][xC] != 0) {
-						direction = upward;
-					}
-					else if(tempRoadMap[yC][xC+1] != 0) {
-						direction = right;
-					}
-					else {
-						
+				try {
+					while(true){
+						if(tempRoadMap[index_Y+1][index_X] != 0) {
+							direction = downward;
+							break;
+						}
+						else if(tempRoadMap[index_Y][index_X-1] != 0) {
+							direction = left;
+							break;
+						}
+						else if(tempRoadMap[index_Y-1][index_X] != 0) {
+							direction = upward;
+							break;
+						}
+						else if(tempRoadMap[index_Y][index_X+1] != 0) {
+							direction = right;
+							break;
+						}
+	
 					}
 				}catch(Exception e) {}
+
 				
 				
-				if(Game.map.tile[yC][xC].airID == IDnum.airMapLast) {
+				if(Game.map.tile[index_Y][index_X].charID == IDnum.charMapLast) {
 					deleteMob();
 					Game.coinNum -= 2;
 					looseHealth();
+					setDirection();
 				}
 				
 				directionFlag = 0;
@@ -146,88 +151,6 @@ public class Mob extends Rectangle{
 		
 	}
 	
-//	public void physic() {
-//		if(walkFrame >= walkSpeed) {
-//			if(direction == right) {
-//				x += 1;
-//			}else if(direction == upward) {
-//				y -= 1;
-//			}else if(direction == downward) {
-//				y += 1;
-//			}else if(direction == left) {
-//				x -= 1;
-//			}
-//			
-//			directionFlag += 1;
-//			
-//			if(directionFlag == Game.map.tileSize) {
-//				if(direction == right) {
-//					xC += 1;
-//					hasRight = true;
-//				}else if(direction == upward) {
-//					yC -= 1;
-//					hasUpward = true;
-//				}else if(direction == downward) {
-//					yC += 1;
-//					hasDownward = true;
-//				}else if(direction == left) {
-//					xC -= 1;
-//					hasLeft = true;
-//				}
-//				
-//				if(!hasUpward) {
-//					try {
-//						if(Game.map.tile[yC+1][xC].groundID == IDnum.groundRoad) {
-//							direction = downward;
-//						}
-//					}catch (Exception e) {}
-//				}
-//				
-//				if(!hasDownward) {
-//					try {
-//						if(Game.map.tile[yC-1][xC].groundID == IDnum.groundRoad) {
-//							direction = upward;
-//						}
-//					}catch (Exception e) {}
-//				}
-//				
-//				if(!hasLeft) {
-//					try {
-//						if(Game.map.tile[yC][xC+1].groundID == IDnum.groundRoad) {
-//							direction = right;
-//						}
-//					}catch (Exception e) {}
-//				}
-//				
-//				if(!hasRight) {
-//					try {
-//						if(Game.map.tile[yC][xC-1].groundID == IDnum.groundRoad) {
-//							direction = left;
-//						}
-//					}catch (Exception e) {}
-//				}
-//				
-//				if(Game.map.tile[yC][xC].airID == IDnum.airMapLast) {
-//					deleteMob();
-//					looseHealth();
-//				}
-//				
-//				hasUpward = false;
-//				hasDownward = false;
-//				hasLeft = false;
-//				hasRight = false;
-//				
-//				directionFlag = 0;
-//			}
-//			
-//			walkFrame = 0;
-//		}else {
-//			walkFrame += 1;
-//		}
-//		
-//		
-//		
-//	}
 	
 	public void loseMobHealth(int h) {
 		health -= h;

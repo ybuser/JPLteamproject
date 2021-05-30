@@ -6,11 +6,11 @@ public class IDnum {
 	public static int groundRoad = 1;
 	
 	//배경 위의 객체들 ID (몬스터 제외)
-	public static int airAir = -1;
-	public static int airMapLast = 0;
-	public static int airItemCancel = 1;
-	public static int airTowerMyeongRyun = 2;
-	public static int airTowerYulJeon = 3;
+	public static int charAir = -1;
+	public static int charMapLast = 0;
+	public static int charItemCancel = 1;
+	public static int charTowerMyeongRyun = 2;
+	public static int charTowerYulJeon = 3;
 	
 	//몬스터 객체 ID
 	public static int mobAir = -1;

@@ -6,19 +6,23 @@ import java.io.*;
 public class Game extends JPanel implements Runnable{
 	public Thread thread = new Thread(this);
 	
-	//ÀÌ¹ÌÁöµé
+	//ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½
 	public static Image[] groundImageFile = new Image[10];
-	public static Image[] airImageFile = new Image[10];
+	public static Image[] charImageFile = new Image[10];
 	public static Image[] restImageFile = new Image[10];
 	public static Image[] mobImageFile = new Image[10];
+	
+	public static Mob[] monsters = new Mob[100];
+	
+	public static boolean first = true;
 	
 	public static int myWidth, myHeight;
 	public static int coinNum = 10, healthNum = 100;
 	public static int deadMob = 0, goalNum = 0;
-	public static int level = 1, maxLevel = 3;
 	public static int clearTime = 2000, clearFrame = 0;
+	public static int level = 1, maxLevel = 3;
 	
-	public static boolean first = true;
+
 	public static boolean flag_Win = false;
 	
 	public static Point mouse = new Point(0, 0);
@@ -29,9 +33,7 @@ public class Game extends JPanel implements Runnable{
 	
 	public static Shop shop;
 	
-	public static Mob[] mobs = new Mob[100];
-	
-	//°ÔÀÓ ½ÃÀÛ
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	public Game(Frame frame) {
 		frame.addMouseListener(new MouseHandel());
 		frame.addMouseMotionListener(new MouseHandel());
@@ -39,7 +41,7 @@ public class Game extends JPanel implements Runnable{
 		thread.start();
 	}
 	
-	//°ÔÀÓ Å¬¸®¾î Á¶°Ç
+	//ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	public static void clear() {
 		if(deadMob == goalNum) {
 			deadMob = 0;		
@@ -48,7 +50,7 @@ public class Game extends JPanel implements Runnable{
 		}
 	}
 	
-	//¸ðµç °ÍÀ» °áÁ¤
+	//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	public void define() {
 		map = new Map();
 		mapInfo = new Mapinfo();
@@ -57,40 +59,40 @@ public class Game extends JPanel implements Runnable{
 		coinNum = 10;
 		healthNum = 20;
 		
-		//ground ÀÌ¹ÌÁö
+		//ground ï¿½Ì¹ï¿½ï¿½ï¿½
 		for(int i = 0; i<groundImageFile.length; i++) {
-			//ÀÌ¹ÌÁö °´Ã¼ »ý¼º
-			groundImageFile[i] = new ImageIcon("res/tileset_ground.png").getImage();
+			//ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
+			groundImageFile[i] = new ImageIcon("image/tile.png").getImage();
 			
-			//ÀÌ¹ÌÁö Àß¶ó³»±â
+			//ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ß¶ó³»±ï¿½
 			groundImageFile[i] = createImage(new FilteredImageSource(groundImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
-		//air ÀÌ¹ÌÁö
-		for(int i = 0; i<airImageFile.length; i++) {
-			airImageFile[i] = new ImageIcon("res/characters.png").getImage();
-			airImageFile[i] = createImage(new FilteredImageSource(airImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
+		//air ï¿½Ì¹ï¿½ï¿½ï¿½
+		for(int i = 0; i<charImageFile.length; i++) {
+			charImageFile[i] = new ImageIcon("image/characters.png").getImage();
+			charImageFile[i] = createImage(new FilteredImageSource(charImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		
-		//³ª¸ÓÁö ÀÌ¹ÌÁöµé
-		restImageFile[0] = new ImageIcon("res/cell.png").getImage();
-		restImageFile[1] = new ImageIcon("res/heart.png").getImage();
-		restImageFile[2] = new ImageIcon("res/coin.png").getImage();
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½
+		restImageFile[0] = new ImageIcon("image/cell.png").getImage();
+		restImageFile[1] = new ImageIcon("image/heart.png").getImage();
+		restImageFile[2] = new ImageIcon("image/coin.png").getImage();
 		
-		mobImageFile[0] = new ImageIcon("res/mob_eunhang.png").getImage(); //¸÷ ÀÌ¹ÌÁö
+		mobImageFile[0] = new ImageIcon("image/mob_eunhang.png").getImage(); //ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½
 		
-		//¸Ê(±æ) ¸¸µé±â
+		//ï¿½ï¿½(ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½
 		mapInfo.loadMap(new File("save/map" + level + ".txt"));
 		
-		//¸ó½ºÅÍ »ý¼º
-		for(int i = 0; i < mobs.length; i++) {
-			mobs[i] = new Mob();
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		for(int i = 0; i < monsters.length; i++) {
+			monsters[i] = new Mob();
 		}
 	
 	}
 	
 	public void paintComponent(Graphics g) {
 		
-		//½ÃÀÛ
+		//ï¿½ï¿½ï¿½ï¿½
 		if(first) {
 			myWidth = getWidth();
 			myHeight = getHeight();
@@ -99,33 +101,33 @@ public class Game extends JPanel implements Runnable{
 			first = false;
 		}
 		
-		//¹è°æ »ö Ãâ·Â
+		//ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 		g.setColor(new Color(200, 200, 200));
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(new Color(0, 0, 0));
 		
-		map.draw(g); //¸Ê Ãâ·Â
+		map.draw(g); //ï¿½ï¿½ ï¿½ï¿½ï¿½
 		
-		//¿Â½ºÅÍ »ý¼º
-		for(int i = 0; i < mobs.length; i++) {
-			if(mobs[i].isLiving) {
-				mobs[i].draw(g);
+		//ï¿½Â½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		for(int i = 0; i < monsters.length; i++) {
+			if(monsters[i].isLiving) {
+				monsters[i].draw(g);
 			}
 		}
 		
 		shop.draw(g); //Drawing the store
 		
-		//°ÔÀÓ ¿À¹ö½Ã
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(healthNum < 1) {
 			g.setColor(new Color(240, 20,20 ,20));
 			g.fillRect(0, 0, myWidth, myHeight);
 			g.setColor(new Color (255, 255, 255));
 			g.setFont(new Font ("Courier New", Font.BOLD, 70));
-			//ÀÌ ºÎºÐ¿¡¼­ °ÔÀÓ ¿À¹ö½Ã ÀÌ¹ÌÁö ¼³Á¤ °¡´É
+			//ï¿½ï¿½ ï¿½ÎºÐ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			g.drawString("Game Over", 150, 50);
 		}
 		
-		//ÀÌ°åÀ»¶§, ´ÙÀ½´Ü°è ¶Ç´Â °ÔÀÓ Á¾·á
+		//ï¿½Ì°ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½Ü°ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if(flag_Win) {
 			g.setColor(new Color (255,255,255));
 			g.fillRect( 0, 0, getWidth(), getHeight());
@@ -140,13 +142,13 @@ public class Game extends JPanel implements Runnable{
 		
 	}
 	
-	//¸ó½ºÅÍ »ý¼º ÁÖ±â(½Ã°£)
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½(ï¿½Ã°ï¿½)
 	public int spawnTime = 2400, spawnFrame = 0;
 	public void mobSpawner() {
 		if(spawnFrame >= spawnTime) {
-			for(int i = 0; i < mobs.length; i++) {
-				if(!mobs[i].isLiving) {
-					mobs[i].spawnMob(IDnum.mobYellow);
+			for(int i = 0; i < monsters.length; i++) {
+				if(!monsters[i].isLiving) {
+					monsters[i].spawnMob(IDnum.mobYellow);
 					break;
 				}
 			}
@@ -163,29 +165,31 @@ public class Game extends JPanel implements Runnable{
 			if(!flag_Win && healthNum > 0 && !first) {
 				map.physic();
 				mobSpawner();
-				for(int i = 0; i < mobs.length; i++) {
-					if(mobs[i].isLiving) {
-						mobs[i].physic();
+				for(int i = 0; i < monsters.length; i++) {
+					if(monsters[i].isLiving) {
+						monsters[i].physic();
 					}
 				}
-			}else {
+			}
+			else {
 				if(flag_Win) {
 					if(clearFrame >= clearTime) {
 						if(level == maxLevel) {
 							System.exit(0);
 						} else {
-							//level Áõ°¡
+							//level ï¿½ï¿½ï¿½ï¿½
 							level += 1;
 							define();
 							Game.coinNum = 10;
 							spawnTime -= 400;
-							for(int i = 0; i < mobs.length; i++) {
-								mobs[i].levelUp();
+							for(int i = 0; i < monsters.length; i++) {
+								monsters[i].levelUp();
 							}
 							flag_Win = false;
 						}	
-							clearFrame = 0;
-					} else {
+						clearFrame = 0;
+					} 
+					else {
 						clearFrame += 1;
 					}
 				}

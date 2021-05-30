@@ -22,12 +22,12 @@ public class Shop {
 	public boolean isHold = false;
 	
 	//아이템 버튼 정보
-	public static int[] shopID = {IDnum.airTowerMyeongRyun, IDnum.airTowerYulJeon, IDnum.airItemCancel};
+	public static int[] shopID = {IDnum.charTowerMyeongRyun, IDnum.charTowerYulJeon, IDnum.charItemCancel};
 	public static int[] shopPrice = { 3, 4, 0 };
 
 	
 	public Rectangle[] shop = new Rectangle[shopNum];
-	public Rectangle rectHealth;
+	public Rectangle healthImage;
 	public Rectangle rectCoins;
 	
 
@@ -37,7 +37,7 @@ public class Shop {
 			shop[i] = new Rectangle(Game.map.tileSize*5 + (buttonSize+buttonSpace)*i, Game.map.tileSize/2*17, buttonSize, buttonSize);
 		}
 		
-		rectHealth = new Rectangle(Game.map.tile[0][0].x - 1, shop[0].y + buttonSize/2, statusSize, statusSize);
+		healthImage = new Rectangle(Game.map.tile[0][0].x - 1, shop[0].y + buttonSize/2, statusSize, statusSize);
 		rectCoins = new Rectangle(Game.map.tile[0][0].x + buttonSize, shop[0].y + buttonSize/2, statusSize, statusSize);
 	}
 	
@@ -46,8 +46,8 @@ public class Shop {
 		if(mouseButton == 1) {
 			 for(int i= 0; i<shop.length; i++) {
 				 if(shop[i].contains(Game.mouse)) {
-					 if(shopID[i] != IDnum.airAir) {
-						 if(shopID[i] != IDnum.airItemCancel) {
+					 if(shopID[i] != IDnum.charAir) {
+						 if(shopID[i] != IDnum.charItemCancel) {
 							 heldTowerID = shopID[i];
 							 heldButtonIndex = i;
 							 isHold = true;
@@ -63,8 +63,8 @@ public class Shop {
 			 if (isHold && Game.coinNum >= shopPrice[heldButtonIndex]){
 				for (int y = 0; y < Game.map.tileHeigntNum; y++){
 					for (int x = 0; x < Game.map.tileWidthNum; x++){
-						if (Game.map.tile[y][x].contains(Game.mouse) && Game.map.tile[y][x].groundID != IDnum.groundRoad && Game.map.tile[y][x].airID == IDnum.airAir){
-							Game.map.tile[y][x].airID = heldTowerID;
+						if (Game.map.tile[y][x].contains(Game.mouse) && Game.map.tile[y][x].groundID != IDnum.groundRoad && Game.map.tile[y][x].charID == IDnum.charAir){
+							Game.map.tile[y][x].charID = heldTowerID;
 							Game.coinNum -= shopPrice[heldButtonIndex];
 						}
 					}
@@ -78,9 +78,9 @@ public class Shop {
 		
 		for(int i = 0; i < shop.length; i++) {
 			
-			//스토어 아이템 이미지 출력
+			//상점 아이템 이미지 출력
 			g.drawImage(Game.restImageFile[0], shop[i].x, shop[i].y, shop[i].width, shop[i].height, null);
-			g.drawImage(Game.airImageFile[shopID[i]], shop[i].x + shopIn, shop[i].y + shopIn, shop[i].width - 2*shopIn, shop[i].height - 2*shopIn, null);
+			g.drawImage(Game.charImageFile[shopID[i]], shop[i].x + shopIn, shop[i].y + shopIn, shop[i].width - 2*shopIn, shop[i].height - 2*shopIn, null);
 			
 			//가격 출력
 			if (shopPrice[i] > 0)
@@ -92,16 +92,16 @@ public class Shop {
 		}
 		
 		//생명, 코인 화면에 생성
-		g.drawImage(Game.restImageFile[1], rectHealth.x, rectHealth.y, rectHealth.width, rectHealth.height, null);
+		g.drawImage(Game.restImageFile[1], healthImage.x, healthImage.y, healthImage.width, healthImage.height, null);
 		g.drawImage(Game.restImageFile[2] ,rectCoins.x, rectCoins.y, rectCoins.width, rectCoins.height, null);
-		g.setFont(new Font("Courier New", Font.BOLD, 14));
 		g.setColor(new Color(0, 0, 0));
-		g.drawString("" + Game.healthNum, rectHealth.x + rectHealth.width + statusSpace, rectHealth.y + statusText);
+		g.setFont(new Font("Courier New", Font.BOLD, 14));
+		g.drawString("" + Game.healthNum, healthImage.x + healthImage.width + statusSpace, healthImage.y + statusText);
 		g.drawString("" + Game.coinNum, rectCoins.x + rectCoins.width + statusSpace, rectCoins.y + statusText);
 
 		//아이템을 클릭했을때 이미지 따라오도록 설정
 		if(isHold) {
-			g.drawImage(Game.airImageFile[heldTowerID], Game.mouse.x - ((shop[0].width - shopIn*2)/2) +shopIn, Game.mouse.y - ((shop[0].width - shopIn*2)/2) +shopIn, shop[0].width - 2*shopIn, shop[0].height - 2*shopIn, null);
+			g.drawImage(Game.charImageFile[heldTowerID], Game.mouse.x - ((shop[0].width - shopIn*2)/2) +shopIn, Game.mouse.y - ((shop[0].width - shopIn*2)/2) +shopIn, shop[0].width - 2*shopIn, shop[0].height - 2*shopIn, null);
 		}
 	}
 }

@@ -21,7 +21,7 @@ public class Mapinfo {
 				//airID ÀÐ±â
 				for(int y = 0; y < Game.map.tileHeigntNum; y++) {
 					for(int x = 0; x < Game.map.tileWidthNum; x++) {
-						Game.map.tile[y][x].airID = sc.nextInt();
+						Game.map.tile[y][x].charID = sc.nextInt();
 					}
 				}
 			}
