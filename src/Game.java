@@ -67,7 +67,7 @@ public class Game extends JPanel implements Runnable{
 		}
 		//air 이미지
 		for(int i = 0; i<airImageFile.length; i++) {
-			airImageFile[i] = new ImageIcon("res/airTestFile.png").getImage();
+			airImageFile[i] = new ImageIcon("res/characters.png").getImage();
 			airImageFile[i] = createImage(new FilteredImageSource(airImageFile[i].getSource(), new CropImageFilter(0, 26*i, 26, 26)));
 		}
 		
@@ -76,7 +76,7 @@ public class Game extends JPanel implements Runnable{
 		restImageFile[1] = new ImageIcon("res/heart.png").getImage();
 		restImageFile[2] = new ImageIcon("res/coin.png").getImage();
 		
-		mobImageFile[0] = new ImageIcon("res/mob.png").getImage(); //몹 이미지
+		mobImageFile[0] = new ImageIcon("res/mob_eunhang.png").getImage(); //몹 이미지
 		
 		//맵(길) 만들기
 		mapInfo.loadMap(new File("save/map" + level + ".txt"));
